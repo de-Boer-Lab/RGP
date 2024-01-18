@@ -1,0 +1,108 @@
+---
+title: "Enformer GB tracks"
+author: "Carl de Boer"
+date: "14/07/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggbio)
+library(reshape)
+library(reticulate)
+library(Homo.sapiens)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+TxDb(Homo.sapiens) <- TxDb.Hsapiens.UCSC.hg38.knownGene
+library(cowplot)
+np = import("numpy")
+#setwd("H:\\Analysis\\RandomGenomeProject\\GB_tracks_enformer")
+
+```
+
+
+
+```{r}
+loci = read.table("genomic_locations.bed", header = F, row.names = NULL, sep="\t")
+trim_left_right = (393216-(896*128))/2
+loci_GR <- GRanges(seqnames = loci$V1,
+            ranges = IRanges(start = loci$V2+trim_left_right,
+                             end = loci$V3-trim_left_right,
+                             names = loci$V4))
+
+```
+
+```{r}
+data(genesymbol, package = "biovizBase")
+```
+
+```{r}
+predTypes = c("genomic","random","mononuc_","dinuc","trinuc","mononuc_local","dinuc_local","trinuc_local")
+genomicPreds = list()
+for (track in predTypes){
+  curPreds = np$load(sprintf("all_pred_%s_seqs.npy",track))
+dimnames(curPreds) = list(sprintf("x%i",1:896), c("H1_DNAse","H1_H3K27ac","H1_H3K4me1","H1_H3K4me3","H1_H3K27me3"), loci$V4[1:1000])
+  genomicPreds[[track]] = curPreds; 
+
+}
+```
+
+```{r}
+names(genomicPreds)
+```
+
+
+```{r}
+plotMultiTracks = function(tracks,n){
+  allDataToPlot = data.frame();
+  for(predType in names(tracks)){
+    curData = melt(tracks[[predType]][,,n])
+    names(curData) = c("posID","track","value")
+    curData$pos =  (as.numeric(gsub("x","",curData$posID))-1)*128+(128/2)
+    curData$type=predType;
+    allDataToPlot = rbind(allDataToPlot, curData)
+  }
+  allPlots = c();
+  for(trackName in unique(allDataToPlot$track)){
+    p = ggplot(allDataToPlot[allDataToPlot$track==trackName,], aes(x=pos, y=value)) + geom_area(fill="black", line="black")+facet_grid(type ~ .) + coord_cartesian(expand=c(0,0)) +theme_classic() + xlab("Position") + ylab(sprintf("Predicted %s coverage",trackName));
+    allPlots = c(allPlots,p)
+    print(p)
+  }
+  g = plot_grid(plotlist= as.list(allPlots), align="h",nrow = 1, axis = "td"); return(g)
+}
+
+plotGBTrack = function(locus, tracks){
+  p.txdb <- autoplot(Homo.sapiens, which = locus)+ coord_cartesian(xlim = c(start(locus), end(locus)), expand=c(0,0))+theme_classic() + theme(axis.text.x = element_blank())
+  curData = melt(tracks)
+  names(curData) = c("posID","track","value")
+  curData$pos = start(locus) + (as.numeric(gsub("x","",curData$posID))-1)*128+(128/2)
+  p = ggplot(curData, aes(x=pos, y=value)) + geom_area(fill="black", line="black")+facet_grid(track ~., scales="free_y") + coord_cartesian(xlim = c(start(locus), end(locus)), expand=c(0,0)) + scale_x_continuous(breaks=as.numeric(ggplot_build(p.txdb@ggplot)$layout$panel_params[[1]]$x$get_labels()))+theme_classic() + xlab(as.character(seqnames(locus))) + ylab("Predicted coverage");
+  g = plot_grid(plotlist=list(p.txdb@ggplot, p), align="v",nrow = 2, axis = "lr", rel_heights = c(1,length(unique(curData$track)))); return(g)
+}
+```
+
+
+```{r}
+n=6; 
+loci_GR[n]
+g2=plotGBTrack(loci_GR[n], genomicPreds[["genomic"]][,,n])
+print(g2)
+ggsave("20220716_genomic_track_genes.pdf", plot=g2, width=6,height=9)
+ggsave("20220716_genomic_track_genes.png", plot=g2, width=6,height=9)
+
+g=plotMultiTracks(genomicPreds,n)
+print(g)
+ggsave("20220716_genomic_tracks_all.pdf", plot=g, width=20,height=8)
+ggsave("20220716_genomic_tracks_all.png", plot=g, width=20,height=8)
+
+```
+
+
+```{r}
+n=6; 
+
+
+```
+
