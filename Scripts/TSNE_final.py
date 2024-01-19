@@ -1,6 +1,5 @@
 #June 15, 2023
 #Fig 3C and Supplementary Figure 8
-#This script will make ecdfs for all nucleotide switch enformer predictions
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -31,11 +30,12 @@ os.mkdir(hparams.output_path)
 
 def tsne_projection_data_annotation(tsne_data, evolved_name, naive_name, palette, output_path):
     #to annotate by label
+
     annot_evolved = [evolved_name for i in range(896000)]
     annot_naive = [naive_name for i in range(896000)]
     annot = annot_evolved + annot_naive
     tsne_data['annot'] = annot
-    #to shuffle order of rows
+    #to shuffle order of rows to ensure to proper plotting
     tsne_data = tsne_data.sample(frac = 1)
 
     fig, axes = plt.subplots(figsize=(5, 5))
@@ -46,6 +46,7 @@ def tsne_projection_data_annotation(tsne_data, evolved_name, naive_name, palette
     plt.ylabel('tSNE2')
     plt.savefig(output_path + '/TSNE_n100_normalized' + str(evolved_name) + '_' + str(naive_name) + '_' + 'shuffled_order.png', dpi=400, bbox_inches="tight")
     plt.close()
+
 
 def tsne_projection_data_annotation_all(tsne_data, evolved_name, random_name, dilocal_name, palette, output_path):
     #to annotate by label
@@ -96,7 +97,6 @@ def tsne_projection_split(tsne_data, evolved_name, naive_name, evolved_tracks, n
     #check code with removed
     naive['annot'] = naive['annot'].mask(naive['annot'] < 0, 0)
     evolved['annot'] = evolved['annot'].mask(evolved['annot'] < 0, 0)
-    ##Take the log of the track value
     vmin = min(min(evolved.annot), min(naive.annot))
     vmax = max(max(evolved.annot), max(naive.annot))
 
@@ -113,7 +113,7 @@ def tsne_projection_split(tsne_data, evolved_name, naive_name, evolved_tracks, n
     ax2.set_ylabel('')
     ax2.set_title(naive_name, fontsize=25)
     fig.subplots_adjust(bottom=0.1, top=0.9, left=0.1, right=0.8, wspace=0.02, hspace=0.02)
-    # Remove the legend and add a colorbaro
+    # Remove the legend and add a colorbar
     norm = plt.Normalize(vmin, vmax)
     sm = plt.cm.ScalarMappable(cmap = cmap, norm = norm)
     sm.set_array([])
@@ -132,7 +132,6 @@ def tsne_projection_split(tsne_data, evolved_name, naive_name, evolved_tracks, n
     ax1.tick_params(labelsize=20)
     plt.savefig(output_path + '/TSNE_n1000_normalized' + evolved_name + '_' + naive_name + '_' + track_name + '_split' + '.png', dpi=400, bbox_inches="tight")
     plt.close()
-
 
 
 ### Read in files
@@ -175,6 +174,7 @@ z = tsne.fit_transform(evolved_dilocal_stack)
 evolved_dilocal = pd.DataFrame()
 evolved_dilocal["comp-1"] = z[:,0]
 evolved_dilocal["comp-2"] = z[:,1]
+#only need to calculate this once can read it in next time to save time
 evolved_dilocal.to_csv(hparams.output_path + "/genomic_dilocal_normalized_n1000.csv")
 
 evolved_dilocal = pd.read_csv(hparams.output_path + "/genomic_dilocal_normalized_n1000.csv")

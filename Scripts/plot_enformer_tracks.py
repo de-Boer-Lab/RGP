@@ -1,5 +1,5 @@
 ##June 15, 2023
-#Fig 3A
+#Fig 3A - simplfied version (only plots track for genomic, random and local dinucleotide shuffled)
 #This script will make plots for the enformer prediction track of interest for all 1000 regions
 import pandas as pd
 import numpy as np
@@ -13,6 +13,7 @@ import argparse
 from scipy.stats.stats import pearsonr
 
 bases = ['A', 'T', 'C', 'G']
+#enformer prediction window
 SEQUENCE_LENGTH = 114_688
 
 parser = argparse.ArgumentParser()
@@ -28,7 +29,7 @@ parser.add_argument("--output_path",
 
 hparams, _ = parser.parse_known_args()
 # os.mkdir(hparams.output_path)
-path_to_predictions = '/scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1rep1/'
+path_to_predictions = '/scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1/'
 ### Read in files
 random_all = np.load(path_to_predictions +'/random_sequences.npy')[:,:,0:1000]
 genomic_all = np.load(path_to_predictions+'/genomic_new.npy')[:,:,0:1000]
@@ -43,7 +44,7 @@ def plot_track(ax, track, title, max_current):
     ax.set_xlabel('')
     ax.set_ylim(0, max_current)
 
-
+#plot all 1000 predicted sequences
 for i in (np.arange(0, 1000, 1).tolist()):
     track_genomic = genomic_all[:,40,i]
     track_random = random_all[:,40,i]
@@ -57,7 +58,7 @@ for i in (np.arange(0, 1000, 1).tolist()):
     track_genomic_max = track_genomic.max()
     track_random_max =track_random.max()
     track_dilocal_max = track_dilocal.max()
-
+    #make the y-axis the same for all 3 tracks
     max_current = max([track_genomic_max, track_random_max, track_dilocal_max])
 
     # Plotting

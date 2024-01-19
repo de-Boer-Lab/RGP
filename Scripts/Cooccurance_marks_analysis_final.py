@@ -160,7 +160,6 @@ def correlation_matrix(evolved, naive, evolved_name, naive_name, index_list, cel
     data[4,3] = calc_corr('H3K27me3 evolved', 'H3K4me3 evolved', all_marks)
     data[4,4] = calc_corr('H3K27me3 evolved', 'H3K27me3 naive', all_marks)
 
-
     np.fill_diagonal(data, np.NaN)
 
     final_corrs = pd.DataFrame(data)
@@ -202,7 +201,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #Dnase - H3K4me1
-
     correlation = calc_corr('DNase naive', 'H3K4me1 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['DNase'],'Col2': ['H3K4me1'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -212,7 +210,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #DNase - H3K4me3
-
     correlation = calc_corr('DNase naive', 'H3K4me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['DNase'],'Col2': ['H3K4me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -222,7 +219,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     ## DNase - H3K27me3
-
     correlation = calc_corr('DNase naive', 'H3K27me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['DNase'],'Col2': ['H3K27me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -232,7 +228,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #H3K27ac - H3K4me1
-
     correlation = calc_corr('H3K27ac naive', 'H3K4me1 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['H3K27ac'],'Col2': ['H3K4me1'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -242,7 +237,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #H3K27ac - H3K4me3
-
     correlation = calc_corr('H3K27ac naive', 'H3K4me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['H3K27ac'],'Col2': ['H3K4me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -252,7 +246,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #H3K27ac - H3K4me3
-
     correlation = calc_corr('H3K27ac naive', 'H3K27me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['H3K27ac'],'Col2': ['H3K27me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -262,7 +255,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     #all H3K4me1
-
     correlation = calc_corr('H3K4me1 naive', 'H3K4me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['H3K4me1'],'Col2': ['H3K4me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -272,7 +264,6 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
     data = pd.concat([data, data_2_add])
 
     # #All H3K4me3
-
     correlation = calc_corr('H3K4me1 naive', 'H3K27me3 naive', all_marks)
     data_2_add = pd.DataFrame({'Col1': ['H3K4me1'],'Col2': ['H3K27me3'], 'pearson': [correlation], 'type_between':['naive']})
     data = pd.concat([data, data_2_add])
@@ -299,18 +290,15 @@ def barplot(evolved, naive, evolved_name, naive_name, index_list, cell_type, out
                'naive': green}
     data['Col1-Col2'] = data.Col1 + data.Col2
     fig, axes = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios':[6,1]})
-    #fig, axes = plt.subplots(figsize=(20, 5))
     sns.barplot(ax=axes[0], data=data,x="Col1-Col2", y="pearson", hue="type_between", palette = palette)
-    #axes[0].xticks(rotation = 45, ha='right', rotation_mode='anchor')
     axes[0].set_xticks([])
     axes[0].set_xlabel('')
     axes[0].set_ylabel('Correlation (Pearsons r)')
     axes[0].set_title(cell_type, fontsize=25)
     axes[0].yaxis.label.set_size(25)
     axes[0].tick_params(labelsize=25)
-    #plt.xticks(rotation = 45, ha='right', rotation_mode='anchor')
-    #plt.savefig('/scratch/st-cdeboer-1/iluthra/randomDNA//all_iPSC_related//box_plot_' + evolved_name + '_' + naive_name + '_all_marks_correlations' + cell_type + '.pdf', dpi=300, bbox_inches="tight")
 
+    #manually create upset plot
     bubble_data = pd.DataFrame(columns = ['1', '2', '3', '4', '5', '6', '7','8','9','10'], index = ['DNase', 'H3K27ac','H3K4me1','H3K4me3','H3K27me3'])
     print(bubble_data)
     bubble_data['1'] = [1,1,0,0,0]

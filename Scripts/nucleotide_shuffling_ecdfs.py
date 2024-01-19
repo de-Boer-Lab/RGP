@@ -25,9 +25,8 @@ parser.add_argument("--output_path",
 
 hparams, _ = parser.parse_known_args()
 
-os.mkdir(hparams.output_path)
 ### Read in files
-
+#only use first 1000 predictions to speed up analysis
 random_all = np.load(hparams.path_to_predictions +'/random_sequences.npy')[:,:,0:1000]
 genomic_all = np.load(hparams.path_to_predictions+'/genomic_new.npy')[:,:,0:1000]
 mono_all = np.load(hparams.path_to_predictions+'/mononuc.npy')[:,:,0:1000]
@@ -37,7 +36,7 @@ mono_local_all = np.load(hparams.path_to_predictions+'/mononuc_local.npy')[:,:,0
 di_local_all = np.load(hparams.path_to_predictions+'/dinuc_local.npy')[:,:,0:1000]
 tri_local_all = np.load(hparams.path_to_predictions+'/trinuc_local.npy')[:,:,0:1000]
 
-
+#default indices used in enformer_multi.pbs match to these 12 cell types (all iPSC related)
 def all_cell_types(output_path):
     cell_types_all = ['iPS_DF_6.9_male_newborn',
     'foreskin_melanocyte_male_newborn',
@@ -126,7 +125,7 @@ def all_cell_types(output_path):
             green = (0/255, 102/255, 0/255)
             purple = (128/255, 0/255, 128/255)
             blue = (0/255, 0/255, 238/255)
-
+            #overlay ecdfs for each sequence set prediction
             sns.ecdfplot(track_list['genomic_' + track], color = purple )
             sns.ecdfplot(track_list['random_'+ track], color = blue)
             sns.ecdfplot(track_list['mono_'+ track], color = (255/255,127/255,80/255))
@@ -143,11 +142,10 @@ def all_cell_types(output_path):
             ax.tick_params(bottom=True, left=True)
             plt.savefig(output_path + '/ecdfs_shuffle/eCDF_' + cell_type + '_' + track + '.pdf', dpi=400, bbox_inches='tight')
 
-            #make cropped version of cdf
+            #make y-axis zoomed in version of cdf
             sns.set(font_scale = 1)
             sns.set_style(style='white')
             fig, ax = plt.subplots()
-            #sns.ecdfplot(x="variable", hue="value", data=pd.melt((track_list)))
 
             sns.ecdfplot(track_list['genomic_' + track], color = purple )
             sns.ecdfplot(track_list['random_'+ track], color = blue)

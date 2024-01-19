@@ -1,5 +1,4 @@
 #!/bin/bash -l
-
 #PBS -l walltime=010:30:00,select=1:ncpus=4:ompthreads=12:ngpus=1:mem=96gb
 #PBS -N ishika_enformer
 #PBS -A st-cdeboer-1-gpu
@@ -10,15 +9,18 @@
 
 ################################################################################
 
+#activate enformer conda enviroment
 module load gcc python miniconda3 cuda cudnn
-conda activate /arc/project/st-cdeboer-1/rafi_tf
-conda activate rafi_tf
+conda activate /arc/project/st-cdeboer-1/ishika_enformer
 
-mkdir /scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1rep2
-cell_type_name="all_iPSC_related_H1rep2"
+#path to save predictions
+mkdir /scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1
+cell_type_name="all_iPSC_related_H1"
 #list of indicies you want to save from enformer predictions
 index_list=(293 4149 4094 2264 4281 380 2162 1601 2518 1912 657 2839 2298 3486 1887 533 1488 1639 3002 4021 357 3019 2390 4186 1761 347 3025 3569 2816 3418 183 3501 1489 1678 2281 526 2899 3494 2806 2682 565 732 2291 1509 2034 405 1452 4018 1719 2771 92 1789 2502 1184 2333 305 3928 2243 4382 3580)
-## read in indices from a file
+
+#change paths in enformer_workflow.py to your desired setup
+#local and global shuffling predictions
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_dinuc_local_393kb_Nflank.fasta --cell_type "$cell_type_name" --experiment_name dinuc_local --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_trinuc_local_393kb_Nflank.fasta --cell_type "$cell_type_name" --experiment_name trinuc_local --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_mononuc_local_393kb_Nflank.fasta --cell_type "$cell_type_name" --experiment_name mononuc_local --indicies "${index_list[@]}"
@@ -26,6 +28,7 @@ python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_w
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_trinuc_393kb_Nflank.fasta --cell_type "$cell_type_name" --experiment_name trinuc --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_mononuc_393kb_Nflank.fasta --cell_type "$cell_type_name" --experiment_name mononuc --indicies "${index_list[@]}"
 
+#nucleotide switch predictions
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_AC2CA_Nflank.fasta --cell_type "$cell_type_name" --experiment_name AC2CA --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_AG2GA_Nflank.fasta --cell_type "$cell_type_name" --experiment_name AG2GA --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_AT2TA_Nflank.fasta --cell_type "$cell_type_name" --experiment_name AT2TA --indicies "${index_list[@]}"
@@ -35,5 +38,6 @@ python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_w
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_GC2CG_Nflank.fasta --cell_type "$cell_type_name" --experiment_name GC2CG --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_TA2AT_Nflank.fasta --cell_type "$cell_type_name" --experiment_name TA2AT --indicies "${index_list[@]}"
 
+#Enformer test set and random sequence predictions
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file test_hg38_seqs_393kb_N_flank.fasta --cell_type "$cell_type_name" --experiment_name genomic_new --indicies "${index_list[@]}"
 python /project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/enformer_workflow.py --fasta_file random_sequences.fasta --cell_type "$cell_type_name" --experiment_name random_sequences --indicies "${index_list}"

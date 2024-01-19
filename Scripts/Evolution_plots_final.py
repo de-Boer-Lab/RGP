@@ -107,7 +107,6 @@ def evolution_panels(intersect_bed, track, cell_type, evolved, naive, index_list
         index = index_list[4]
 
     evolved = pd.DataFrame({track: evolved[:, index, :].flatten('F')})
-    print("YO")
     print(evolved.max())
     naive = pd.DataFrame({track: naive[:, index, :].flatten('F')})
     print(naive.max())
@@ -117,13 +116,11 @@ def evolution_panels(intersect_bed, track, cell_type, evolved, naive, index_list
     ecdf_evolved = ECDF(evolved[track])
 
     encode_enformer_merged = pd.read_csv(output_path + intersect_bed, sep = '\t', header = None)
-    print("here")
 
     encode_enformer_merged.columns = ['binchr', 'binstart','binend','enformer_track_value', 'peakchr','peakstart','peakend','bp_overlap']
     #sort by overlap by biggest to smallest
     encode_enformer_merged = encode_enformer_merged.sort_values(by='bp_overlap', ascending=False)
     encode_enformer_merged = encode_enformer_merged.drop_duplicates(['binchr', 'binstart','binend'], keep='first')
-    #duplicate = encode_enformer_merged[encode_enformer_merged.duplicated(['binstart'], keep=False)]
 
     in_peak = pd.DataFrame(encode_enformer_merged[encode_enformer_merged.bp_overlap >= 10])
     not_in = pd.DataFrame(encode_enformer_merged[encode_enformer_merged.bp_overlap < 10])
@@ -162,7 +159,6 @@ def evolution_panels(intersect_bed, track, cell_type, evolved, naive, index_list
     print(max(ecdf_naive.x))
     print(max(ecdf_evolved.x))
     range_limit = max(max(ecdf_evolved.x),max(ecdf_naive.x))
-    print(range_limit)
     index_list = []
     naive_list = []
     evolved_list = []
@@ -171,7 +167,7 @@ def evolution_panels(intersect_bed, track, cell_type, evolved, naive, index_list
         naive_list.append(1 - ecdf_naive(k))
         evolved_list.append(1 - ecdf_evolved(k))
 
-
+    #calculate y-axis values ration of evolved to naive
     cdf_ratio = np.log2(np.array(evolved_list)/np.array(naive_list))
 
     def closest_value(input_list, input_value):
@@ -215,7 +211,6 @@ def single_ecdf_plots(index_x, index_y, axes, ecdf_naive, ecdf_evolved, track_na
 
 def single_evolution_plot(index_x, index_y, axes, plot_peak_data, track, y_max_left, y_max_right, y_min_right, index_list, cdf_ratio, cell_type):
     #overlay Evolution subplot
-
     ax2 = axes[index_x,index_y].twinx()
     axes[index_x,index_y].plot(plot_peak_data[track], plot_peak_data.ratio, color = '#40B0A6')
     axes[index_x,index_y].set_xlabel("Enformer Evolved " + cell_type + ' ' + track + " predictions", fontsize=40)
@@ -225,7 +220,6 @@ def single_evolution_plot(index_x, index_y, axes, plot_peak_data, track, y_max_l
     axes[index_x,index_y].tick_params(labelsize=40)
 
     ax2.plot(index_list, cdf_ratio, color = '#E1BE6A')
-    #ax2.set_ylabel("log2(evolved/naive)", fontsize=15, color = '#E1BE6A')
 
     ax2.set_ylabel("Evolved:Naive", color = '#E1BE6A')
     ax2.set_ylim(y_min_right, y_max_right)

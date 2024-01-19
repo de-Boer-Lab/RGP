@@ -17,7 +17,7 @@ from Modules.Enformer import *
 from Modules.FastaExt import *
 import argparse
 
-
+#command line parser arguments
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--fasta_file",
@@ -33,44 +33,37 @@ parser.add_argument("--indicies",
 hparams, _ = parser.parse_known_args()
 
 start_time = time.time()
+#path to trained enformer model weights
 path = "/project/st-cdeboer-1/iluthra/enformer/test_enformer/trained_model/"
-#model = EnformerScoreVariantsRaw(path) #run the model and store it in the variable
-#
+
 model = Enformer(path)
 
 SEQUENCE_LENGTH = 393216
 
 ## read in fasta file
-
 prefix = str("/scratch/st-cdeboer-1/iluthra/randomDNA/" + hparams.cell_type + '/')
 input_fasta = open('/project/st-cdeboer-1/iluthra/enformer_random_DNA/enformer_data/' + hparams.fasta_file, 'r')
 
+#read in fasta file
 data = []
-
 for line in input_fasta:
     if line.startswith('>'):
         continue
     else:
         data.append(line)
 
-
 all_predictions = np.empty([896, len(hparams.indicies), 0])
 
+#save enformer predictions for indicies interest
 for i in range(0, len(data)):
-  #print(data[i])
   sequence_one_hot = one_hot_encode(data[i].strip())
   predictions = model.predict_on_batch(sequence_one_hot[np.newaxis])['human'][0]
-  print(predictions.shape)
   predictions_current = predictions[:, hparams.indicies]
-  print(predictions_current.shape)
   predictions_current = predictions_current[:,:, np.newaxis]
-  print(predictions_current.shape)
   all_predictions = np.append(all_predictions, predictions_current, axis = 2)
-
 
   print("Predictions Done %d!" % (i))
 
-##add if size != 896xn call error
 print(time.time() - start_time)
 print(all_predictions.shape)
 np.save(prefix+hparams.experiment_name, all_predictions)

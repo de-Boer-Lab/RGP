@@ -10,16 +10,20 @@
 
 ################################################################################
 
+#load necessasry modules for enformer conda enviroment
 module load gcc python miniconda3 cuda cudnn
-conda activate /arc/project/st-cdeboer-1/rafi_tf
 conda activate ishika_enformer
 
-prediction_path="/scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1rep1/"
+#change path to match where enformer predictions are saved
+prediction_path="/scratch/st-cdeboer-1/iluthra/randomDNA/all_iPSC_related_H1/"
+#add path to where plots should be saved
 mkdir /scratch/st-cdeboer-1/iluthra/randomDNA/Analysis_outputs_06152023/H1_DNase_rep1_07052023/
 output_path_dir="/scratch/st-cdeboer-1/iluthra/randomDNA/Analysis_outputs_06152023/H1_DNase_rep1_07052023/"
+
+#path where all analysis scripts are saved
 scripts_path="/project/st-cdeboer-1/iluthra/enformer/test_enformer/de-former/Paper_Review_Analysis/Final_clean_scripts_figures/"
 
-python "$scripts_path""/nucleotide_shuffling_ecdfs.py" --path_to_predictions "$prediction_path"  --cell_type "H1-hESC" --cell_type_index 40 --output_path "$output_path_dir""/ecdfs_shuffle/"
+python "$scripts_path""nucleotide_shuffling_ecdfs.py" --path_to_predictions "$prediction_path"  --cell_type "H1-hESC" --cell_type_index 40 --output_path "$output_path_dir""/ecdfs_shuffle/"
 
 python "$scripts_path""nucleotide_switch_ecdfs.py" --path_to_predictions "$prediction_path"  --cell_type "H1-hESC" --cell_type_index 40 --output_path "$output_path_dir""/ecdfs_switch/"
 
@@ -29,6 +33,7 @@ python "$scripts_path""CAGE_tracks_analysis_final.py" --path_to_predictions "/sc
 
 python "$scripts_path""germlayer_scatterplots.py" --path_to_predictions "$prediction_path" --track_indices 5 15 25 --output_path "$output_path_dir""/meso_endo_ecto/"
 
+#track indicies for cell type of interest across 5 chromatin marks used
 python "$scripts_path""encode_enformer_bed_files.py" --path_to_predictions "$prediction_path" --cell_type "H1-hESC" --track_indices 40 41 42 43 44 --encode_file_paths "//project/st-cdeboer-1/iluthra//enformer_random_DNA/enformer_data/ENCODE/" --output_path "$output_path_dir""/Evolution_plots/"
 
 #need to run bedtools here 5 tracks of interest
@@ -51,4 +56,5 @@ python "$scripts_path""Evolution_plots_final.py" --path_to_predictions "$predict
 
 python "$scripts_path""Cooccurance_marks_analysis_final.py" --path_to_predictions "$prediction_path" --cell_type "H1-hESC" --track_indices 40 41 42 43 44 --output_path "$output_path_dir""/Cooccurance_marks_analysis/"
 
+#this script goes last since its takes the longest to run
 python "$scripts_path""TSNE_final.py" --path_to_predictions "$prediction_path" --cell_type "H1-hESC" --track_indices 40 41 42 43 44 --output_path "$output_path_dir""/TSNE/"

@@ -29,7 +29,7 @@ When predicting use the correctly padded test set sequence file: `test_hg38_seqs
 
 ## Running analysis pipeline to create the figures from the paper
 
-Plots in the paper can be recreated individually using each script separately or all the analysis (except Fig 4b) can be made using RGP_plots.pbs script. Input and output paths will need to be changed.
+Plots in the paper can be recreated individually using each script separately or all the analysis (except Fig 4b) can be made using `RGP_plots.pbs` script. Input and output paths will need to be changed.
 
 `qsub RGP_plots.pbs` 
 

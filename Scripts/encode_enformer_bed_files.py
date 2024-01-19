@@ -41,6 +41,7 @@ tracks = ['Dnase', 'H3K27ac','H3K4me1','H3K4me3', 'H3K27me3']
 
 def make_bed_files(evolved_all, input_bed_encode, track, cell_type, track_list, output_path):
     #Clip the ENCODE file to just chr start and end
+    #path to where you store this file ) (can be found on github)
     all_bed_split_128 = pd.read_csv("/project/st-cdeboer-1/iluthra//enformer_random_DNA/enformer_data/ENCODE/genomic_regions_coordinates_n1000_114kb_128bins.bed", sep = '\t')
 
     if track == "Dnase":
@@ -64,12 +65,10 @@ def make_bed_files(evolved_all, input_bed_encode, track, cell_type, track_list, 
     bed_file_coor = bed_file_H1.iloc[:,0:3]
     bed_file_coor.to_csv(output_path + cell_type + '_' + track + "encode.bed", index = False, header = None, sep = '\t')
 
-#need to download corresponding bed files from ENCODE manually
+#need to download corresponding bed files from ENCODE manually for other cell types/tracks
+#For the 12 cell types used in this study they can be found via the zenodo link in github
 make_bed_files(evolved, "ENCFF983UCL.bed", "Dnase", hparams.cell_type, hparams.track_indices, hparams.output_path)
 make_bed_files(evolved, "ENCFF520LUH.bed", "H3K27ac",hparams.cell_type, hparams.track_indices, hparams.output_path)
 make_bed_files(evolved, "ENCFF711NNX.bed", "H3K4me1", hparams.cell_type,hparams.track_indices, hparams.output_path)
 make_bed_files(evolved, "ENCFF760ZNE.bed", "H3K4me3", hparams.cell_type,hparams.track_indices, hparams.output_path)
 make_bed_files(evolved, "ENCFF760MIC.bed", "H3K27me3",hparams.cell_type, hparams.track_indices, hparams.output_path)
-
-# run bedtools with this file and enformer test region file
-#bedtools intersect -wao -a genomic_regions_coordinates_n1000_114kb_128bins_h1_dnase.bed -b H1-hESC_track.bed > track_enformer_overlap.bed
