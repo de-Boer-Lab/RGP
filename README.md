@@ -5,7 +5,7 @@
 The repo contains the scripts to recreate the human analysis portion for the the manuscript: Regulatory activity is the default DNA state in eukaryotes. Using the raw data provided a user can create their own shuffled sequence datasets using Biasaway and then produce downstream plots. Detailed information about the set up can be found in methods section here: https://www.biorxiv.org/content/10.1101/2022.12.16.520785v1.full
 
 ## Generating shuffled sequences 
-Datasets can be found here: https://zenodo.org/records/10529931
+Datasets can be found here: https://zenodo.org/records/10535706
 
 To create shuffled sequence sets use `test_hg38_seqs_196kb.fasta` and biasaway (sample commands below). Test set regions (196kb each) with "N"s were filtered out to ensure proper shuffling and the surrounding flanking regions were added post shuffling. 
 
